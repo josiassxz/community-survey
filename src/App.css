@@ -1,5 +1,35 @@
+@font-face {
+  font-family: 'Libertinus Serif';
+  src: url('./fonts/LibertinusSerif-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Libertinus Serif';
+  src: url('./fonts/LibertinusSerif-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Libertinus Serif';
+  src: url('./fonts/LibertinusSerif-Italic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: italic;
+}
+
 .App {
   text-align: center;
+}
+
+body {
+  font-family: 'Libertinus Serif', serif;
+}
+
+.title {
+  font-family: 'Libertinus Serif', serif;
+  font-weight: bold;
 }
 
 .App-logo {

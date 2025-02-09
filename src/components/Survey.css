@@ -1,5 +1,6 @@
 body {
   background-color: #F0F0F0; /* Branco gelo definido no manual de marca do LAM */
+  font-family: 'Libertinus Serif', serif;
 }
 
 .container {

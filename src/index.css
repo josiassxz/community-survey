@@ -1,13 +1,32 @@
+@font-face {
+  font-family: 'Libertinus Serif';
+  src: url('./fonts/LibertinusSerif-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Libertinus Serif';
+  src: url('./fonts/LibertinusSerif-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Libertinus Serif';
+  src: url('./fonts/LibertinusSerif-Italic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: italic;
+}
+
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Libertinus Serif', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Libertinus Serif', serif;
 }
