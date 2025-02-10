@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
+import FloatingIcons from './FloatingIcons';
 import './Survey.css';
 
 const SurveyForm = () => {
   const questions = [
-    "Gosto de passar tempo com animais de estimação em casa.",
-    "Prefiro gatos a cães como animais de companhia.",
-    "Eu consideraria adotar de um abrigo de animais.",
-    "Acredito que os animais têm vidas emocionais complexas.",
-    "Levo regularmente meu animal de estimação para consultas veterinárias."
+    "Me interesso por descobertas científicas e avanços tecnológicos.",
+    "Gosto de ajudar pessoas e fazer a diferença na vida delas.",
+    "Tenho facilidade com números e resolução de problemas.",
+    "Me identifico com atividades criativas e artísticas.",
+    "Gosto de entender como funcionam as leis e a justiça."
   ];
 
   const [responses, setResponses] = useState({});
@@ -18,10 +19,11 @@ const SurveyForm = () => {
 
   return (
     <nav role="navigation" tabIndex={0} style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+      <FloatingIcons />
       <div className="container">
         <header className="header">
-          <h1 className="title">Community Survey</h1>
-          <div className="subtitle">Questions 1-5 of 25</div>
+          <h1 className="title">Teste Vocacional</h1>
+          <div className="subtitle">Questões 1-5 de 25</div>
         </header>
 
         <form className="survey-form">
@@ -48,36 +50,48 @@ const SurveyForm = () => {
           <div className="footer">
             <div className="progress">20%</div>
             <button type="submit" className="continue-btn">
-              Continue
+              Continuar
             </button>
           </div>
         </form>
       </div>
 
       <style jsx>{`
-  @media (max-width: 768px) {
-    .container {
-      width: 95%;
-      padding: 10px;
-    }
-    .options-container {
-      flex-direction: column;
-      gap: 10px;
-    }
-    .continue-btn {
-      width: 100%;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .title {
-      font-size: 1.25rem;
-    }
-    .question-text {
-      font-size: 1rem;
-    }
-  }
-`}</style>
+        @media (max-width: 768px) {
+          .container {
+            width: 95%;
+            padding: 10px;
+          }
+          .options-container {
+            flex-direction: column;
+            gap: 10px;
+          }
+          .option {
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 10px;
+            width: 100%;
+          }
+          .radio-label {
+            margin-top: 0;
+          }
+          .continue-btn {
+            width: 100%;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .title {
+            font-size: 1.25rem;
+          }
+          .question-text {
+            font-size: 1rem;
+          }
+          .radio-label {
+            font-size: 0.875rem;
+          }
+        }
+      `}</style>
     </nav>
   );
 };
