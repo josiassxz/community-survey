@@ -11,7 +11,7 @@ const BiDashboard = () => {
         title="BI Dashboard"
         width="100%"
         height="100%"
-        src="http://bi.dpe-go.intra/public/dashboard/4fdd609e-740b-447a-92cc-e7b3202c66f8"
+        src="https://app.powerbi.com/view?r=eyJrIjoiOWUwODUyNTgtOGUwOC00MjU0LWJjZjQtNmZkMTU3NDNmMmUzIiwidCI6ImU2YzUxYzNhLWMwZDYtNDhjZC05OGM5LTNkZmM3N2FiZDk5MyJ9"
         frameBorder="0"
         allowFullScreen
         style={{
