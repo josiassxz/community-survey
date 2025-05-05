@@ -1,23 +1,120 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FloatingIcons from './FloatingIcons';
 import './Survey.css';
 
-const SurveyForm = () => {
-  // Questões combinadas dos dois dicionários
-  const questions = [
-    "Você tem interesse em analisar documentos, elaborar contratos e defender interesses legais?",
-    "Você se vê desenvolvendo estratégias para resolver conflitos, mediar negociações ou assessorar clientes?",
-    "Gosta de trabalhar com planejamento de projetos, análise de custos e gestão de recursos em obras ou empreendimentos?",
-    "Tem interesse em realizar diagnósticos, prescrever tratamentos e acompanhar a evolução de pacientes?",
-    "Prefere atividades que envolvem pesquisa, análise técnica e elaboração de relatórios detalhados?",
-    "Você se interessa por atuar em equipe, coordenar ações e implementar soluções inovadoras?",
-    "Tem aptidão para lidar com aspectos jurídicos, interpretar leis e representar clientes em questões legais?",
-    "Você gosta de atividades práticas como inspeções, execução de projetos técnicos e uso de equipamentos especializados?",
-    "Tem interesse em atuar com ética, responsabilidade social e mediação de conflitos em ambientes corporativos?",
-    "Prefere trabalhar com educação em saúde, prevenção de doenças e promoção de bem-estar coletivo?",
-  ];
+// Estilos adicionais para corrigir a quebra de layout
+const styles = {
+  scoreContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    marginBottom: '20px',
+  },
+  scoreBarContainer: {
+    width: '100%',
+    height: '24px',
+    backgroundColor: '#f0f0f0',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    marginBottom: '5px',
+  },
+  scorePercentage: {
+    textAlign: 'center',
+    fontSize: '14px',
+    marginTop: '5px',
+  },
+  courseRecommendation: {
+    marginBottom: '25px',
+    padding: '10px',
+    borderRadius: '8px',
+    backgroundColor: '#f9f9f9',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  }
+};
 
-  // Palavras-chave relacionadas a cada carreira
+// Lista de 50 dicas para escolha de carreira
+const careerTips = [
+  "Considere fazer testes de aptidão vocacional para descobrir áreas que combinam com suas habilidades naturais.",
+  "Converse com profissionais que já atuam na área que você está considerando seguir.",
+  "Visite universidades e participe de feiras de profissões para conhecer melhor os cursos.",
+  "Reflita sobre o que você gosta de fazer no seu tempo livre - seus hobbies podem indicar carreiras potenciais.",
+  "Avalie o mercado de trabalho da profissão desejada, mas não deixe que seja o único fator na sua decisão.",
+  "Pense no estilo de vida que a carreira proporcionará: carga horária, ambiente de trabalho, nível de estresse.",
+  "Considere suas forças pessoais e escolha uma carreira onde elas possam ser valorizadas.",
+  "Faça um estágio ou trabalho voluntário na área para ter uma experiência prática antes de decidir.",
+  "Não tenha medo de mudar de ideia - muitas pessoas bem-sucedidas já trocaram de carreira.",
+  "Procure conhecer as diferentes especializações dentro de cada área profissional.",
+  "Avalie se você prefere trabalhar mais com pessoas, dados, objetos ou ideias.",
+  "Questione-se sobre o impacto que você deseja causar no mundo através da sua profissão.",
+  "Leve em consideração seus valores pessoais ao escolher uma carreira.",
+  "Busque informações sobre a remuneração média e as perspectivas de crescimento na área.",
+  "Considere a possibilidade de empreender na área que você gosta.",
+  "Pense nas habilidades transferíveis que você já possui e como elas se aplicariam a diferentes carreiras.",
+  "Avalie o quanto você está disposto a estudar - algumas carreiras exigem educação continuada.",
+  "Lembre-se que a primeira graduação nem sempre determina toda a sua trajetória profissional.",
+  "Considere programas de dupla graduação ou formações interdisciplinares.",
+  "Analise se você se adapta melhor a ambientes estruturados ou mais flexíveis e criativos.",
+  "Pense no equilíbrio entre vida profissional e pessoal que cada carreira pode proporcionar.",
+  "Considere suas limitações e como cada carreira se adequaria a elas.",
+  "Avalie se você prefere uma carreira com rotinas previsíveis ou desafios variados.",
+  "Leia biografias de profissionais inspiradores na área que você está considerando.",
+  "Acompanhe blogs, podcasts e canais sobre as profissões que te interessam.",
+  "Considere fazer disciplinas eletivas ou cursos livres para explorar áreas diferentes.",
+  "Avalie se você se identifica mais com trabalho em equipe ou individual.",
+  "Pense nas possibilidades de atuação internacional que a carreira oferece.",
+  "Leve em conta o tempo de formação e o investimento financeiro necessário para se estabelecer na área.",
+  "Observe as tendências tecnológicas e como elas podem afetar as carreiras no futuro.",
+  "Reflita sobre como você se vê daqui a 5, 10 e 20 anos em cada carreira considerada.",
+  "Não subestime a importância da saúde mental na escolha profissional.",
+  "Avalie se você prefere trabalhar em grandes organizações, pequenas empresas ou de forma autônoma.",
+  "Identifique seus pontos fracos e avalie como eles poderiam impactar cada escolha de carreira.",
+  "Crie um mapa mental ou diário de reflexões sobre suas opções de carreira.",
+  "Considere as possibilidades de conciliar diferentes interesses em uma única carreira.",
+  "Pense na sua relação com a tecnologia ao escolher uma área de atuação.",
+  "Avalie o quanto cada carreira permitirá você expressar sua criatividade.",
+  "Considere como diferentes profissões se alinham com seu desejo por estabilidade ou por inovação.",
+  "Não ignore seus instintos e intuições sobre o que parece certo para você.",
+  "Considere o nível de interação social que cada carreira exige e se isso combina com seu perfil.",
+  "Pense na possibilidade de trabalhar remotamente, se isso for importante para você.",
+  "Reflita sobre como suas habilidades de comunicação se adequam às diferentes carreiras.",
+  "Considere fazer um ano sabático para explorar diferentes possibilidades antes de decidir.",
+  "Avalie se você se identifica mais com profissões que exigem raciocínio analítico ou criativo.",
+  "Pergunte-se o que você faria mesmo sem receber por isso - pode ser um indicador da sua vocação.",
+  "Considere como as diferentes carreiras se alinham com suas crenças e valores éticos.",
+  "Pense em como cada profissão permitirá que você continue aprendendo ao longo da vida.",
+  "Lembre-se que é possível combinar diferentes áreas de interesse ao longo da sua carreira.",
+  "Pergunte-se: 'O que o mundo precisa que eu adoraria fazer?'"
+];
+
+const SurveyForm = () => {
+  const [questions, setQuestions] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  const [currentPage, setCurrentPage] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [responses, setResponses] = useState({});
+  const [careerScores, setCareerScores] = useState({
+    direito: 0,
+    medicina: 0,
+    desenvolvedor: 0,
+    arquitetura: 0
+  });
+  const [recommendedCareer, setRecommendedCareer] = useState("");
+  const [careerDescription, setCareerDescription] = useState("");
+  const [apiRecommendations, setApiRecommendations] = useState(null);
+  const [apiError, setApiError] = useState(null);
+  
+  // Estado para armazenar a dica atual
+  const [currentTip, setCurrentTip] = useState("");
+
+  // Função para selecionar uma dica aleatória
+  const getRandomTip = () => {
+    const randomIndex = Math.floor(Math.random() * careerTips.length);
+    return careerTips[randomIndex];
+  };
+
+  // Palavras-chave relacionadas a cada carreira (mantido do código original)
   const careerKeywords = {
     direito: [
       "analisar", "contratos", "defender", "legais", "processos", "juridica", 
@@ -41,26 +138,126 @@ const SurveyForm = () => {
     ]
   };
 
-  const [currentPage, setCurrentPage] = useState(0); // 0 para teste, 1 para resultados
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [responses, setResponses] = useState({});
-  const [careerScores, setCareerScores] = useState({
-    direito: 0,
-    medicina: 0,
-    desenvolvedor: 0,
-    arquitetura: 0
-  });
-  const [recommendedCareer, setRecommendedCareer] = useState("");
-  const [careerDescription, setCareerDescription] = useState("");
+  // Pesos das perguntas para cada carreira
+  // Este objeto será adaptado após o carregamento das perguntas da API
+  const [questionWeights, setQuestionWeights] = useState({});
+
+  // Atualizar a dica quando a pergunta mudar
+  useEffect(() => {
+    setCurrentTip(getRandomTip());
+  }, [currentQuestion]);
+
+  // Buscar perguntas da API
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        setIsLoading(true);
+        // Adicionando opções para lidar com CORS e tratando possíveis erros
+        try {
+          const response = await fetch('http://localhost:8000/questions', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            // mode: 'cors' 
+          });
+          
+          if (!response.ok) {
+            throw new Error('Erro ao buscar perguntas: ' + response.statusText);
+          }
+          
+          const data = await response.json();
+        setQuestions(data.questions);
+        
+        // Criar pesos para cada questão com base nas palavras-chave
+        const weights = {};
+        Object.keys(data.questions).forEach((qId, index) => {
+          const question = data.questions[qId];
+          const keywords = question["palavras-chave"] || [];
+          
+          // Inicializar pesos para esta questão
+          weights[index] = { direito: 0, medicina: 0, desenvolvedor: 0, arquitetura: 0 };
+          
+          // Para cada palavra-chave, verificar se está associada a alguma carreira
+          keywords.forEach(keyword => {
+            Object.keys(careerKeywords).forEach(career => {
+              if (careerKeywords[career].includes(keyword.toLowerCase())) {
+                // Aumentar o peso desta carreira para esta questão
+                weights[index][career] += 0.5;
+              }
+            });
+          });
+          
+          // Se não houver palavras-chave correspondentes, aplicar pesos padrão
+          const totalWeight = Object.values(weights[index]).reduce((a, b) => a + b, 0);
+          if (totalWeight === 0) {
+            weights[index] = { direito: 0.25, medicina: 0.25, desenvolvedor: 0.25, arquitetura: 0.25 };
+          }
+        });
+        
+          setQuestionWeights(weights);
+          setIsLoading(false);
+        } catch (fetchError) {
+          console.error("Erro na requisição:", fetchError);
+          throw new Error("Erro na comunicação com o servidor: " + fetchError.message);
+        }
+      } catch (error) {
+        console.error("Erro geral:", error);
+        setError(error.message);
+        setIsLoading(false);
+      }
+    };
+    
+    fetchQuestions();
+  }, []);
 
   const handleResponse = (questionIndex, value) => {
     setResponses({ ...responses, [questionIndex]: value });
   };
 
-  const calculateResults = () => {
-    // Calculando a pontuação para cada carreira com base nas palavras-chave
-    // Cada pergunta tem palavras-chave e a pontuação da resposta (0-4) multiplica a contribuição
+  const calculateResults = async () => {
+    // Formatar as respostas para o formato esperado pela API
+    const formattedResponses = {};
+    const questionKeys = Object.keys(questions);
     
+    // Certifique-se de que todas as questões estão sendo enviadas
+    questionKeys.forEach((qstKey, index) => {
+      if (responses[index] !== undefined) {
+        formattedResponses[qstKey] = responses[index];
+      } else {
+        // Caso alguma questão não tenha sido respondida (não deveria acontecer)
+        // Definimos um valor padrão (3 = neutro)
+        formattedResponses[qstKey] = 3;
+      }
+    });
+    
+    // Enviar respostas para a API
+    try {
+      setIsLoading(true);
+      const response = await fetch('http://localhost:8000/answers?top_degrees=5', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedResponses)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao enviar respostas: ' + response.statusText);
+      }
+      
+      const apiData = await response.json();
+      setApiRecommendations(apiData.recommendations);
+      setApiError(null);
+    } catch (error) {
+      console.error("Erro ao enviar respostas:", error);
+      setApiError("Não foi possível obter recomendações da API: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+    
+    // Continuar com o cálculo local também (como backup)
     const newScores = {
       direito: 0,
       medicina: 0,
@@ -68,24 +265,10 @@ const SurveyForm = () => {
       arquitetura: 0
     };
     
-    // Pesos das perguntas para cada carreira
-    const questionWeights = {
-      0: { direito: 2, medicina: 0, desenvolvedor: 0, arquitetura: 0 },
-      1: { direito: 1.5, medicina: 0, desenvolvedor: 0.5, arquitetura: 0 },
-      2: { direito: 0, medicina: 0, desenvolvedor: 0.5, arquitetura: 2 },
-      3: { direito: 0, medicina: 2, desenvolvedor: 0, arquitetura: 0 },
-      4: { direito: 0.5, medicina: 0.5, desenvolvedor: 1, arquitetura: 0.5 },
-      5: { direito: 0, medicina: 0, desenvolvedor: 1.5, arquitetura: 1 },
-      6: { direito: 2, medicina: 0, desenvolvedor: 0, arquitetura: 0 },
-      7: { direito: 0, medicina: 0, desenvolvedor: 0.5, arquitetura: 1.5 },
-      8: { direito: 1, medicina: 0.5, desenvolvedor: 0, arquitetura: 0 },
-      9: { direito: 0, medicina: 2, desenvolvedor: 0, arquitetura: 0 },
-    };
-    
-    // Calculando pontuação
+    // Calculando pontuação com base nas respostas e pesos
     Object.keys(responses).forEach(questionIndex => {
-      const responseValue = responses[questionIndex]; // Valor de 0-4
-      const normalizedValue = (responseValue + 1) / 5; // Normalizar para 0.2-1.0
+      const responseValue = responses[questionIndex]; // Valor de 1-5
+      const normalizedValue = responseValue / 5; // Normalizar para 0.2-1.0
       
       Object.keys(questionWeights[questionIndex]).forEach(career => {
         const weight = questionWeights[questionIndex][career];
@@ -127,11 +310,17 @@ const SurveyForm = () => {
     setCareerDescription(descriptions[recommended]);
   };
 
-  const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
+  const handleNext = async () => {
+    // Convertendo Object.keys(questions) para array para poder acessar pelo índice
+    const questionKeys = Object.keys(questions);
+    
+    // Atualizar a dica para a próxima pergunta
+    setCurrentTip(getRandomTip());
+    
+    if (currentQuestion < questionKeys.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      calculateResults();
+      await calculateResults();
       setCurrentPage(1); // Mostrar resultados
     }
   };
@@ -139,6 +328,8 @@ const SurveyForm = () => {
   const handlePrevious = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
+      // Também mudar a dica ao voltar
+      setCurrentTip(getRandomTip());
     }
   };
 
@@ -152,6 +343,9 @@ const SurveyForm = () => {
       desenvolvedor: 0,
       arquitetura: 0
     });
+    setApiRecommendations(null);
+    setApiError(null);
+    setCurrentTip(getRandomTip());
   };
 
   // Formatando nomes das carreiras para exibição
@@ -165,6 +359,74 @@ const SurveyForm = () => {
     return names[career] || career;
   };
 
+  // Se estiver carregando, mostrar spinner
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Carregando perguntas...</p>
+      </div>
+    );
+  }
+
+  // Se houver erro, mostrar mensagem e também adicionar um fallback para as perguntas
+  if (error) {
+    // Se não conseguirmos obter da API, usar perguntas de fallback
+    if (Object.keys(questions).length === 0) {
+      const fallbackQuestions = {
+        "QST_01": {
+          "text": "Você se sente confortável em analisar dados complexos, identificar problemas e propor soluções lógicas e bem fundamentadas?",
+          "palavras-chave": ["analisar"]
+        },
+        "QST_02": {
+          "text": "Você prefere trabalhar em equipe, interagir com diferentes públicos, apresentar ideias e mediar discussões, ou prefere tarefas mais individuais?",
+          "palavras-chave": ["comunicar", "interagir", "equipes"]
+        },
+        "QST_03": {
+          "text": "Você tem facilidade para planejar tarefas, organizar recursos, gerenciar cronogramas e monitorar o progresso de projetos?",
+          "palavras-chave": ["logistica"]
+        },
+        "QST_04": {
+          "text": "Você se considera uma pessoa criativa, com interesse em design, estética, artes visuais ou na criação de conceitos e soluções originais?",
+          "palavras-chave": ["criar", "grafico"]
+        },
+        "QST_05": {
+          "text": "Você tem interesse em atividades práticas que envolvam manuseio de ferramentas, equipamentos, tecnologia, softwares ou a construção e manutenção de sistemas?",
+          "palavras-chave": ["equipamentos", "tecnologia"]
+        }
+      };
+      
+      setQuestions(fallbackQuestions);
+      
+      // Criar pesos para cada questão
+      const weights = {};
+      Object.keys(fallbackQuestions).forEach((qId, index) => {
+        weights[index] = { direito: 0.25, medicina: 0.25, desenvolvedor: 0.25, arquitetura: 0.25 };
+      });
+      setQuestionWeights(weights);
+      
+      return (
+        <div className="error-container">
+          <p>Aviso: Usando perguntas locais devido a um erro de conexão com a API.</p>
+          <p>Erro: {error}</p>
+          <button onClick={() => window.location.reload()}>Tentar novamente</button>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="error-container">
+        <p>Erro ao carregar perguntas: {error}</p>
+        <button onClick={() => window.location.reload()}>Tentar novamente</button>
+      </div>
+    );
+  }
+
+  // Convertendo Object.keys(questions) para array para poder acessar pelo índice
+  const questionKeys = Object.keys(questions);
+  const currentQuestionKey = questionKeys[currentQuestion];
+  const currentQuestionObj = questions[currentQuestionKey];
+  
   return (
     <div className="test-container" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
       <FloatingIcons />
@@ -173,93 +435,425 @@ const SurveyForm = () => {
         // Página do questionário
         <div className="container">
           <header className="header">
-            <h1 className="title">Teste Vocacional</h1>
-            <div className="subtitle">Questão {currentQuestion + 1} de {questions.length}</div>
+            <h1 className="title" style={{
+              color: '#F5002D',
+              fontSize: '32px',
+              fontWeight: 'bold',
+              marginBottom: '10px'
+            }}>Teste Vocacional</h1>
+            <div className="subtitle" style={{
+              fontSize: '16px',
+              color: '#555',
+              marginBottom: '10px'
+            }}>Questão {currentQuestion + 1} de {questionKeys.length}</div>
+            <div className="instructions" style={{
+              backgroundColor: '#f5f5f5',
+              padding: '12px',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              fontSize: '15px',
+              lineHeight: '1.5',
+              color: '#444'
+            }}>
+              <p>Em uma escala de 1 a 5, avalie quanto cada afirmação se aplica a você:</p>
+              <p><strong>1</strong> = Menos relevante para mim | <strong>5</strong> = Mais relevante para mim</p>
+            </div>
           </header>
 
           <div className="survey-form">
-            <div className={`question-card question-${(currentQuestion % 5) + 1}`}>
-              <p className="question-text">{questions[currentQuestion]}</p>
-              <div className="options-container">
-                {['Discordo Totalmente', 'Discordo', 'Neutro', 'Concordo', 'Concordo Totalmente'].map((option, optIndex) => (
-                  <div key={optIndex} className="option">
+            <div className={`question-card question-${(currentQuestion % 5) + 1}`} style={{
+              padding: '25px',
+              borderRadius: '12px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              backgroundColor: 'white',
+              marginBottom: '20px'
+            }}>
+              <p className="question-text" style={{
+                fontSize: '18px',
+                fontWeight: '500',
+                marginBottom: '20px',
+                lineHeight: '1.5',
+                color: '#333'
+              }}>{currentQuestionObj.text}</p>
+              
+              <div className="scale-description" style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginBottom: '10px',
+                color: '#666',
+                fontSize: '14px'
+              }}>
+                <span>Menos relevante para mim</span>
+                <span>Mais relevante para mim</span>
+              </div>
+              
+              <div className="options-container" style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+                maxWidth: '500px',
+                margin: '0 auto'
+              }}>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <div key={value} className="option" style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '50px'
+                  }}>
                     <input
                       type="radio"
-                      id={`option-${optIndex}`}
+                      id={`option-${value}`}
                       name={`question-${currentQuestion}`}
-                      value={optIndex}
-                      checked={responses[currentQuestion] === optIndex}
-                      onChange={() => handleResponse(currentQuestion, optIndex)}
+                      value={value}
+                      checked={responses[currentQuestion] === value}
+                      onChange={() => handleResponse(currentQuestion, value)}
                       className="radio-input"
+                      style={{
+                        transform: 'scale(1.5)',
+                        marginBottom: '8px',
+                        accentColor: '#3498db'
+                      }}
                     />
-                    <label htmlFor={`option-${optIndex}`} className="radio-label">{option}</label>
+                    <label 
+                      htmlFor={`option-${value}`} 
+                      className="radio-label"
+                      style={{
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        color: responses[currentQuestion] === value ? '#3498db' : '#666'
+                      }}
+                    >
+                      {value}
+                    </label>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="footer">
-              <div className="progress">{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</div>
-              <div className="button-container">
-                {currentQuestion > 0 && (
+            <div className="footer" style={{marginTop: '25px'}}>
+                <div className="progress-container" style={{
+                  marginBottom: '10px',
+                  width: '100%'
+                }}>
+                  <div className="progress-label" style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '5px',
+                    fontSize: '14px',
+                    color: '#666'
+                  }}>
+                    <span>Progresso</span>
+                    <span>{currentQuestion === 0 ? '0' : Math.round(((currentQuestion) / (questionKeys.length - 1)) * 100)}%</span>
+                  </div>
+                  
+                  {/* Barra de progresso com indicadores de início e fim */}
+                  <div className="progress-bar-container" style={{
+                    width: '100%',
+                    height: '10px',
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: '5px',
+                    overflow: 'hidden',
+                    border: '2px solid #CCCCCC',
+                    position: 'relative'
+                  }}>
+                    {/* Barra de progresso */}
+                    <div className="progress-bar" style={{
+                      width: `${currentQuestion === 0 ? '0' : Math.round(((currentQuestion) / (questionKeys.length - 1)) * 100)}%`,
+                      height: '100%',
+                      backgroundColor: '#F5002D',
+                      borderRadius: '5px',
+                      transition: 'width 0.3s ease'
+                    }}></div>
+                  </div>
+                  
+                  {/* Indicadores textuais de início e fim */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '12px',
+                    color: '#666',
+                    marginTop: '4px'
+                  }}>
+                    <span>Início</span>
+                    <span>Fim</span>
+                  </div>
+                </div>
+                
+                
+              </div>
+              <div className="button-container" style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: '100%',
+                  gap: '10px',
+                  marginTop: '20px'
+                }}>
+                  {currentQuestion > 0 ? (
+                    <button 
+                      type="button" 
+                      onClick={handlePrevious} 
+                      className="previous-btn"
+                      style={{
+                        padding: '14px 24px',
+                        borderRadius: '50px',
+                        border: '1px solid #F5002D',
+                        backgroundColor: 'white',
+                        color: '#F5002D',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        width: '100%'
+                      }}
+                    >
+                      Anterior
+                    </button>
+                  ) : null}
                   <button 
                     type="button" 
-                    onClick={handlePrevious} 
-                    className="previous-btn"
+                    onClick={handleNext} 
+                    className="continue-btn"
+                    disabled={responses[currentQuestion] === undefined}
+                    style={{
+                      padding: '14px 24px',
+                      borderRadius: '50px',
+                      border: 'none',
+                      backgroundColor: responses[currentQuestion] === undefined ? '#ccc' : '#F5002D',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      cursor: responses[currentQuestion] === undefined ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.3s ease',
+                      width: '100%'
+                    }}
                   >
-                    Anterior
+                    {currentQuestion < questionKeys.length - 1 ? 'Continuar' : 'Ver Resultados'}
                   </button>
-                )}
-                <button 
-                  type="button" 
-                  onClick={handleNext} 
-                  className="continue-btn"
-                  disabled={responses[currentQuestion] === undefined}
-                >
-                  {currentQuestion < questions.length - 1 ? 'Continuar' : 'Ver Resultados'}
-                </button>
-              </div>
-            </div>
+                </div>
           </div>
         </div>
       ) : (
         // Página de resultados
-        <div className="container results-container">
-          <header className="header">
-            <h1 className="title">Seus Resultados</h1>
-            <div className="subtitle">Descubra sua carreira ideal!</div>
+        <div className="container results-container" style={{
+          backgroundColor: 'white',
+          borderRadius: '15px',
+          boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
+          padding: '30px',
+          maxWidth: '800px',
+          margin: '0 auto'
+        }}>
+          <header className="header" style={{
+            textAlign: 'center',
+            marginBottom: '30px'
+          }}>
+            <h1 className="title" style={{
+              color: '#F5002D',
+              fontSize: '36px',
+              fontWeight: 'bold',
+              marginBottom: '10px'
+            }}>Seus Resultados</h1>
+            <div className="subtitle" style={{
+              fontSize: '18px',
+              color: '#555',
+              fontStyle: 'italic'
+            }}>Descubra sua carreira ideal!</div>
           </header>
 
-          <div className="results-content">
-            <div className="recommended-career">
-              <h2>Carreira Recomendada: {formatCareerName(recommendedCareer)}</h2>
-              <p className="career-description">{careerDescription}</p>
-            </div>
-
-            <div className="all-careers">
-              <h3>Compatibilidade com diferentes carreiras:</h3>
-              <div className="career-bars">
-                {Object.keys(careerScores).map(career => (
-                  <div key={career} className="career-score">
-                    <div className="career-name">{formatCareerName(career)}</div>
-                    <div className="score-bar-container">
-                      <div 
-                        className="score-bar" 
-                        style={{ 
-                          width: `${careerScores[career]}%`,
-                          backgroundColor: career === recommendedCareer ? '#4CAF50' : '#F5002D'
-                        }}
-                      ></div>
-                    </div>
-                    <div className="score-percentage">{careerScores[career]}%</div>
-                  </div>
-                ))}
+          <div className="results-content" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}>
+            {apiRecommendations ? (
+              <div className="api-recommendations" style={{
+                width: '100%', 
+                maxWidth: '700px', 
+                margin: '0 auto',
+                backgroundColor: '#f9f9f9',
+                borderRadius: '12px',
+                padding: '25px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+              }}>
+                <h2 style={{
+                  margin: '0 0 25px 0', 
+                  textAlign: 'center',
+                  color: '#333',
+                  fontSize: '24px',
+                  position: 'relative',
+                  paddingBottom: '15px'
+                }}>
+                  <span style={{
+                    position: 'relative',
+                    display: 'inline-block'
+                  }}>
+                    Cursos Recomendados para Você
+                    <span style={{
+                      position: 'absolute',
+                      bottom: '-10px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '60px',
+                      height: '3px',
+                      backgroundColor: '#F5002D',
+                      borderRadius: '3px'
+                    }}></span>
+                  </span>
+                </h2>
+                <div className="recommended-courses" style={{padding: '0'}}>
+                  {Object.keys(apiRecommendations.nome_curso).map((key, index) => {
+                    const courseName = apiRecommendations.nome_curso[key];
+                    const similarity = apiRecommendations.Similarity[key];
+                    const percentage = Math.round(similarity * 100);
+                    
+                    return (
+                      <div key={key} style={{
+                        backgroundColor: 'white',
+                        borderLeft: `4px solid ${index === 0 ? '#F5002D' : '#3498db'}`,
+                        padding: '20px',
+                        marginBottom: '15px',
+                        borderRadius: '8px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
+                      }} className="course-recommendation">
+                        <h3 style={{
+                          margin: '0 0 15px 0',
+                          color: index === 0 ? '#F5002D' : '#3498db',
+                          display: 'flex',
+                          alignItems: 'center',
+                          fontSize: '20px',
+                          fontWeight: '600'
+                        }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            backgroundColor: index === 0 ? '#4CAF50' : '#3498db',
+                            color: 'white',
+                            fontSize: '16px',
+                            marginRight: '10px'
+                          }}>{index + 1}</span>
+                          {courseName.charAt(0).toUpperCase() + courseName.slice(1)}
+                        </h3>
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          width: '100%'
+                        }}>
+                          <div style={{
+                            width: '100%',
+                            height: '16px',
+                            backgroundColor: '#f0f0f0',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            marginBottom: '8px'
+                          }}>
+                            <div 
+                              className="score-bar" 
+                              style={{ 
+                                width: `${percentage}%`,
+                                backgroundColor: index === 0 ? '#4CAF50' : '#3498db',
+                                height: '100%',
+                                borderRadius: '8px'
+                              }}
+                            ></div>
+                          </div>
+                          <div style={{
+                            textAlign: 'center',
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            color: index === 0 ? '#4CAF50' : '#3498db'
+                          }}>{percentage}% de compatibilidade</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Resultados da análise local (exibir apenas se a API falhar) */
+              <>
+                {apiError && (
+                  <div className="api-error">
+                    <p>{apiError}</p>
+                    <p>Apresentando resultados baseados em nossa análise local:</p>
+                  </div>
+                )}
+                
+                <div className="recommended-career">
+                  <h2>Carreira Recomendada: {formatCareerName(recommendedCareer)}</h2>
+                  <p className="career-description">{careerDescription}</p>
+                </div>
 
-            <button type="button" onClick={restartTest} className="restart-btn">
+                <div className="all-careers">
+                  <h3>Compatibilidade com diferentes carreiras:</h3>
+                  <div className="career-bars">
+                    {Object.keys(careerScores).map(career => (
+                      <div key={career} className="career-score">
+                        <div className="career-name">{formatCareerName(career)}</div>
+                        <div className="score-bar-container">
+                          <div 
+                            className="score-bar" 
+                            style={{ 
+                              width: `${careerScores[career]}%`,
+                              backgroundColor: career === recommendedCareer ? '#4CAF50' : '#F5002D'
+                            }}
+                          ></div>
+                        </div>
+                        <div className="score-percentage">{careerScores[career]}%</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            <button 
+              type="button" 
+              onClick={restartTest} 
+              className="restart-btn"
+              style={{
+                backgroundColor: '#F5002D', 
+                color: 'white', 
+                padding: '14px 30px', 
+                borderRadius: '50px', 
+                border: 'none', 
+                fontSize: '18px', 
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'block',
+                margin: '40px auto 10px',
+                boxShadow: '0 4px 8px rgba(245, 0, 45, 0.3)',
+                width: '80%',
+                maxWidth: '400px',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                overflow: 'hidden',
+                zIndex: 1
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 12px rgba(245, 0, 45, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(245, 0, 45, 0.3)';
+              }}
+            >
               Refazer o Teste
             </button>
+            
+            <p style={{
+              textAlign: 'center',
+              color: '#888',
+              fontSize: '14px',
+              marginTop: '20px'
+            }}>
+              Obrigado por realizar nosso teste vocacional!
+            </p>
           </div>
         </div>
       )}
