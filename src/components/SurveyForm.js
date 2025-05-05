@@ -604,7 +604,7 @@ const SurveyForm = () => {
                 </div>
               </>
             ) : saveSuccess ? (
-              <p style={{...styles.modalText, color: '#4CAF50', fontWeight: 'bold'}}>
+              <p style={{...styles.modalText, color: '#3498DB', fontWeight: 'bold'}}>
                 Resultados salvos com sucesso! Obrigado pela sua contribuição.
               </p>
             ) : (
@@ -896,7 +896,7 @@ const SurveyForm = () => {
                     return (
                       <div key={key} style={{
                         backgroundColor: 'white',
-                        borderLeft: `4px solid ${index === 0 ? '#F5002D' : '#3498db'}`,
+                        borderLeft: `4px solid ${index === 0 ? '#3498db' : '#3498db'}`,
                         padding: '20px',
                         marginBottom: '15px',
                         borderRadius: '8px',
@@ -904,7 +904,7 @@ const SurveyForm = () => {
                       }} className="course-recommendation">
                         <h3 style={{
                           margin: '0 0 15px 0',
-                          color: index === 0 ? '#F5002D' : '#3498db',
+                          color: index === 0 ? '#3498db' : '#3498db',
                           display: 'flex',
                           alignItems: 'center',
                           fontSize: '20px',
@@ -917,7 +917,7 @@ const SurveyForm = () => {
                             width: '28px',
                             height: '28px',
                             borderRadius: '50%',
-                            backgroundColor: index === 0 ? '#4CAF50' : '#3498db',
+                            backgroundColor: index === 0 ? '#3498DB' : '#3498db',
                             color: 'white',
                             fontSize: '16px',
                             marginRight: '10px'
@@ -965,7 +965,7 @@ const SurveyForm = () => {
                             className="score-bar" 
                             style={{ 
                               width: `${careerScores[career]}%`,
-                              backgroundColor: career === recommendedCareer ? '#4CAF50' : '#F5002D'
+                              backgroundColor: career === recommendedCareer ? '#3498DB' : '#F5002D'
                             }}
                           ></div>
                         </div> */}
