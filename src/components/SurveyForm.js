@@ -29,6 +29,84 @@ const styles = {
     borderRadius: '8px',
     backgroundColor: '#f9f9f9',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  },
+  // Estilos para o modal
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: '12px',
+    padding: '25px',
+    width: '90%',
+    maxWidth: '500px',
+    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
+    position: 'relative',
+  },
+  modalTitle: {
+    color: '#F5002D',
+    fontSize: '20px',
+    fontWeight: 'bold',
+    marginBottom: '15px',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: '16px',
+    lineHeight: '1.5',
+    color: '#333',
+    marginBottom: '20px',
+    textAlign: 'center',
+  },
+  checkboxContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '20px',
+    padding: '10px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+  },
+  checkbox: {
+    margin: '0 10px 0 0',
+    transform: 'scale(1.2)',
+    accentColor: '#F5002D',
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '10px',
+  },
+  primaryButton: {
+    backgroundColor: '#F5002D',
+    color: 'white',
+    padding: '12px 20px',
+    borderRadius: '50px',
+    border: 'none',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    flex: '1',
+  },
+  secondaryButton: {
+    backgroundColor: 'white',
+    color: '#F5002D',
+    padding: '12px 20px',
+    borderRadius: '50px',
+    border: '1px solid #F5002D',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    flex: '1',
   }
 };
 
@@ -104,6 +182,12 @@ const SurveyForm = () => {
   const [careerDescription, setCareerDescription] = useState("");
   const [apiRecommendations, setApiRecommendations] = useState(null);
   const [apiError, setApiError] = useState(null);
+  const [formattedResponses, setFormattedResponses] = useState(null);
+  
+  // Estados para o modal de consentimento
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(null);
   
   // Estado para armazenar a dica atual
   const [currentTip, setCurrentTip] = useState("");
@@ -218,19 +302,22 @@ const SurveyForm = () => {
 
   const calculateResults = async () => {
     // Formatar as respostas para o formato esperado pela API
-    const formattedResponses = {};
+    const formatted = {};
     const questionKeys = Object.keys(questions);
     
     // Certifique-se de que todas as questões estão sendo enviadas
     questionKeys.forEach((qstKey, index) => {
       if (responses[index] !== undefined) {
-        formattedResponses[qstKey] = responses[index];
+        formatted[qstKey] = responses[index];
       } else {
         // Caso alguma questão não tenha sido respondida (não deveria acontecer)
         // Definimos um valor padrão (3 = neutro)
-        formattedResponses[qstKey] = 3;
+        formatted[qstKey] = 3;
       }
     });
+    
+    // Guarda as respostas formatadas para usar posteriormente no salvamento
+    setFormattedResponses(formatted);
     
     // Enviar respostas para a API
     try {
@@ -240,7 +327,7 @@ const SurveyForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formattedResponses)
+        body: JSON.stringify(formatted)
       });
       
       if (!response.ok) {
@@ -249,6 +336,10 @@ const SurveyForm = () => {
       
       const apiData = await response.json();
       setApiRecommendations(apiData.recommendations);
+      
+      // Mostrar o modal de consentimento após receber os resultados
+      setShowConsentModal(true);
+      
       setApiError(null);
     } catch (error) {
       console.error("Erro ao enviar respostas:", error);
@@ -310,6 +401,41 @@ const SurveyForm = () => {
     setCareerDescription(descriptions[recommended]);
   };
 
+  // Função para salvar os resultados na API
+  const saveResults = async () => {
+    if (!consentChecked || !formattedResponses || !apiRecommendations) {
+      return;
+    }
+    
+    try {
+      const saveResponse = await fetch('http://localhost:8000/save_results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          answers: formattedResponses,
+          recommendations: apiRecommendations
+        })
+      });
+      
+      if (!saveResponse.ok) {
+        throw new Error('Erro ao salvar resultados: ' + saveResponse.statusText);
+      }
+      
+      // Feedback de sucesso
+      setSaveSuccess(true);
+      
+      // Fechar o modal após um breve delay
+      setTimeout(() => {
+        setShowConsentModal(false);
+      }, 1500);
+    } catch (error) {
+      console.error("Erro ao salvar resultados:", error);
+      setSaveSuccess(false);
+    }
+  };
+
   const handleNext = async () => {
     // Convertendo Object.keys(questions) para array para poder acessar pelo índice
     const questionKeys = Object.keys(questions);
@@ -346,6 +472,8 @@ const SurveyForm = () => {
     setApiRecommendations(null);
     setApiError(null);
     setCurrentTip(getRandomTip());
+    setFormattedResponses(null);
+    setSaveSuccess(null);
   };
 
   // Formatando nomes das carreiras para exibição
@@ -430,6 +558,63 @@ const SurveyForm = () => {
   return (
     <div className="test-container" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
       <FloatingIcons />
+      
+      {/* Modal de consentimento */}
+      {showConsentModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3 style={styles.modalTitle}>Salvar Resultados do Teste (Maiores de 18 anos)</h3>
+            
+            {saveSuccess === null ? (
+              <>
+                <p style={styles.modalText}>
+                  Gostaríamos de salvar os resultados do seu teste para fins de pesquisa, melhoria do sistema.
+                  Ao clicar em "Concordo", você confirma que tem 18 anos ou mais e aceita que seus dados sejam salvos para este fim.
+                </p>
+                
+                <div style={styles.checkboxContainer}>
+                  <input
+                    type="checkbox"
+                    id="consent-checkbox"
+                    checked={consentChecked}
+                    onChange={(e) => setConsentChecked(e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  <label htmlFor="consent-checkbox">Concordo e confirmo ter 18 anos ou mais</label>
+                </div>
+                
+                <div style={styles.buttonContainer}>
+                  <button 
+                    style={styles.secondaryButton}
+                    onClick={() => setShowConsentModal(false)}
+                  >
+                    Não concordo
+                  </button>
+                  <button 
+                    style={{
+                      ...styles.primaryButton,
+                      opacity: consentChecked ? 1 : 0.5,
+                      cursor: consentChecked ? 'pointer' : 'not-allowed'
+                    }}
+                    onClick={saveResults}
+                    disabled={!consentChecked}
+                  >
+                    Concordo
+                  </button>
+                </div>
+              </>
+            ) : saveSuccess ? (
+              <p style={{...styles.modalText, color: '#4CAF50', fontWeight: 'bold'}}>
+                Resultados salvos com sucesso! Obrigado pela sua contribuição.
+              </p>
+            ) : (
+              <p style={{...styles.modalText, color: '#F5002D', fontWeight: 'bold'}}>
+                Ocorreu um erro ao salvar os resultados. Por favor, tente novamente mais tarde.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
       
       {currentPage === 0 ? (
         // Página do questionário
