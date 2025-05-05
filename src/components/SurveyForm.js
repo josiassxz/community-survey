@@ -569,7 +569,7 @@ const SurveyForm = () => {
               <>
                 <p style={styles.modalText}>
                   Gostaríamos de salvar os resultados do seu teste para fins de pesquisa, melhoria do sistema.
-                  Ao clicar em "Concordo", você confirma que tem 18 anos ou mais e aceita que seus dados sejam salvos para este fim.
+                  Ao clicar em "Concordo", você confirma que tem 18 anos ou mais e aceita que os dados referentes à resposta do questionário sejam salvos para este fim.
                 </p>
                 
                 <div style={styles.checkboxContainer}>
