@@ -889,8 +889,9 @@ const SurveyForm = () => {
                 <div className="recommended-courses" style={{padding: '0'}}>
                   {Object.keys(apiRecommendations.nome_curso).map((key, index) => {
                     const courseName = apiRecommendations.nome_curso[key];
-                    const similarity = apiRecommendations.Similarity[key];
-                    const percentage = Math.round(similarity * 100);
+                    const description = apiRecommendations.description && apiRecommendations.description[key] 
+                      ? apiRecommendations.description[key] 
+                      : "Informações sobre o curso não disponíveis.";
                     
                     return (
                       <div key={key} style={{
@@ -923,36 +924,16 @@ const SurveyForm = () => {
                           }}>{index + 1}</span>
                           {courseName.charAt(0).toUpperCase() + courseName.slice(1)}
                         </h3>
-                        <div style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          width: '100%'
+                        
+                        {/* Descrição do curso */}
+                        <p style={{
+                          fontSize: '15px',
+                          color: '#555',
+                          marginBottom: '5px',
+                          lineHeight: '1.4'
                         }}>
-                          <div style={{
-                            width: '100%',
-                            height: '16px',
-                            backgroundColor: '#f0f0f0',
-                            borderRadius: '8px',
-                            overflow: 'hidden',
-                            marginBottom: '8px'
-                          }}>
-                            <div 
-                              className="score-bar" 
-                              style={{ 
-                                width: `${percentage}%`,
-                                backgroundColor: index === 0 ? '#4CAF50' : '#3498db',
-                                height: '100%',
-                                borderRadius: '8px'
-                              }}
-                            ></div>
-                          </div>
-                          <div style={{
-                            textAlign: 'center',
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            color: index === 0 ? '#4CAF50' : '#3498db'
-                          }}>{percentage}% de compatibilidade</div>
-                        </div>
+                          {description}
+                        </p>
                       </div>
                     );
                   })}
@@ -979,7 +960,7 @@ const SurveyForm = () => {
                     {Object.keys(careerScores).map(career => (
                       <div key={career} className="career-score">
                         <div className="career-name">{formatCareerName(career)}</div>
-                        <div className="score-bar-container">
+                        {/* <div className="score-bar-container">
                           <div 
                             className="score-bar" 
                             style={{ 
@@ -987,7 +968,7 @@ const SurveyForm = () => {
                               backgroundColor: career === recommendedCareer ? '#4CAF50' : '#F5002D'
                             }}
                           ></div>
-                        </div>
+                        </div> */}
                         <div className="score-percentage">{careerScores[career]}%</div>
                       </div>
                     ))}
